@@ -1,13 +1,18 @@
 # app/robo_advisor.py
 
-import requests
+import csv
 import json
+import os
+
+import requests
+
 
 def to_usd(my_price):
         return "${0:,.2f}".format(my_price)
 # 
 # INFO INPUTS
 #
+
 request_url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=demo"
 
 response = requests.get(request_url)
@@ -35,6 +40,18 @@ for date in dates:
 
 recent_high = max(high_prices)
 recent_low = min(high-prices)
+
+# csv_file_path = "data/prices.csv" # a relative filepath
+csv_file_path = os.path.join(os.path.dirname(_file_), "..", "data", "prices.csv")
+
+
+with open(csv_file_path, "w") as csv_file: # "w" means "open the file for writing"
+    writer = csv.DictWriter(csv_file, fieldnames=["city", "name"])
+    writer.writeheader() # uses fieldnames set above
+    writer.writerow({"city": "New York", "name": "Yankees"})
+    writer.writerow({"city": "New York", "name": "Mets"})
+    writer.writerow({"city": "Boston", "name": "Red Sox"})
+    writer.writerow({"city": "New Haven", "name": "Ravens"})
 
 print("-------------------------")
 print("SELECTED SYMBOL: XYZ")

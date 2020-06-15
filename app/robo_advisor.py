@@ -12,8 +12,10 @@ def to_usd(my_price):
 # 
 # INFO INPUTS
 #
+api_key = "demo"
+symbol = "IBM" #TODO: accept user input
 
-request_url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=demo"
+request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&{api_key}"
 
 response = requests.get(request_url)
 
@@ -44,17 +46,20 @@ recent_low = min(high-prices)
 # csv_file_path = "data/prices.csv" # a relative filepath
 csv_file_path = os.path.join(os.path.dirname(_file_), "..", "data", "prices.csv")
 
-csv_headers = [t"timestamp", "open", "high", "low", "close", "volume"]
+csv_headers = ["timestamp", "open", "high", "low", "close", "volume"]
 with open(csv_file_path, "w") as csv_file: # "w" means "open the file for writing"
     writer = csv.DictWriter(csv_file, fieldnames=["city", "name"])
     writer.writeheader() # uses fieldnames set above
     # looping
+for date in dates:
+    daily_prices = tsd[date]
     writer.writerow({
-        "timestamp": "TODO", 
-        "high": "TODO"
-        "low": "TODO"
-        "close": "TODO"
-        "volume": "TODO"
+        "timestamp:" date, 
+        "high": daily_prices["1. open"],
+        "high": daily_prices["2. high"],
+        "low": daily_prices["3. low"],
+        "close": daily_prices["4. close"],
+        "volume": daily_prices["5. volume"]
         })
 
 print("-------------------------")

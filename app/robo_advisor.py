@@ -63,6 +63,24 @@ with open(csv_file_path, "w") as csv_file: # "w" means "open the file for writin
             "volume": daily_prices["5. volume"]
             })
 
+x = latest_close 
+y = recent_low + (recent_low * .2)
+
+def recommendation():
+    if (x < y):
+        return "BUY!"
+    else:
+        return "DON'T BUY!"
+
+a = "BECAUSE THE STOCK'S LATEST CLOSING PRICE IS LESS THAN 20% OF IT'S RECENT LOW")
+b = "BECAUSE THE STOCK'S LATEST CLOSING PRICE IS MORE THAN/EQUAL TO 20% OF IT'S RECENT LOW")
+
+def because():
+    if (x < y):
+        return "a"
+    else:
+        return "b"
+
 print("-------------------------")
 print("SELECTED SYMBOL: " + symbol)
 print("-------------------------")
@@ -74,9 +92,12 @@ print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
 print(f"RECENT HIGH: {to_usd(float(recent_high))}")
 print(f"RECENT LOW: {to_usd(float(recent_low))}")
 print("-------------------------")
-print("RECOMMENDATION: BUY!")
-print("BECAUSE: TODO")
+print("RECOMMENDATION: " + str(recommendation))
+print("BECAUSE: " + str(because))
 print("-------------------------")
 print(f"WRITING DATA TO CSV: {csv_file_path}...")
 print("HAPPY INVESTING!")
 print("-------------------------")
+
+
+# If the stock's latest closing price is less than 20% above its recent low, "Buy", else "Don't Buy".

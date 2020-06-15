@@ -4,24 +4,25 @@ import csv
 import json
 import os
 
+from dotenv import load_dotenv
 import requests
-
 
 def to_usd(my_price):
         return "${0:,.2f}".format(my_price)
 # 
 # INFO INPUTS
 #
-api_key = "demo"
-symbol = "IBM" #TODO: accept user input
+api_key = os.environ.get("ALPHAVANTAGE_API_KEY") 
+#print(api_key)
+symbol = input("Please input a Stock Ticker: ") #TODO: accept user input
 
-request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&{api_key}"
+request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
 
 response = requests.get(request_url)
 
 parsed_response = json.loads(response.text)
 
-last_refreshed = parsed_response["Meta Data"["3. Last Refreshed"]]
+last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
 
 tsd = parsed_response["Time Series (Daily)"]
 
@@ -37,33 +38,33 @@ low_prices = []
 for date in dates:
     high_price = tsd[date]["2. high"]
     high_prices.append(float(high_price))
-    low_price = tsd[date]["2.low"]
-    low_prices.append(float(high-Price))
+    low_price = tsd[date]["3. low"]
+    low_prices.append(float(low_price))
 
 recent_high = max(high_prices)
-recent_low = min(high-prices)
+recent_low = min(low_prices)
 
 # csv_file_path = "data/prices.csv" # a relative filepath
-csv_file_path = os.path.join(os.path.dirname(_file_), "..", "data", "prices.csv")
+csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
 
 csv_headers = ["timestamp", "open", "high", "low", "close", "volume"]
 with open(csv_file_path, "w") as csv_file: # "w" means "open the file for writing"
-    writer = csv.DictWriter(csv_file, fieldnames=["city", "name"])
+    writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
     writer.writeheader() # uses fieldnames set above
     # looping
-for date in dates:
-    daily_prices = tsd[date]
-    writer.writerow({
-        "timestamp:" date, 
-        "high": daily_prices["1. open"],
-        "high": daily_prices["2. high"],
-        "low": daily_prices["3. low"],
-        "close": daily_prices["4. close"],
-        "volume": daily_prices["5. volume"]
-        })
+    for date in dates:
+        daily_prices = tsd[date]
+        writer.writerow({
+            "timestamp": date, 
+            "open": daily_prices["1. open"],
+            "high": daily_prices["2. high"],
+            "low": daily_prices["3. low"],
+            "close": daily_prices["4. close"],
+            "volume": daily_prices["5. volume"]
+            })
 
 print("-------------------------")
-print("SELECTED SYMBOL: XYZ")
+print("SELECTED SYMBOL: " + symbol)
 print("-------------------------")
 print("REQUESTING STOCK MARKET DATA...")
 print("REQUEST AT: 2018-02-20 02:00pm")
@@ -76,6 +77,6 @@ print("-------------------------")
 print("RECOMMENDATION: BUY!")
 print("BECAUSE: TODO")
 print("-------------------------")
-print("WRITING DATA TO CSV: {csv_file_path}..."")
+print(f"WRITING DATA TO CSV: {csv_file_path}...")
 print("HAPPY INVESTING!")
 print("-------------------------")

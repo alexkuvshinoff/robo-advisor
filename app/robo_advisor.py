@@ -13,14 +13,23 @@ def to_usd(my_price):
 # INFO INPUTS
 #
 api_key = os.environ.get("ALPHAVANTAGE_API_KEY") 
-#print(api_key)
+
 symbol = input("Please input a Stock Ticker: ") #TODO: accept user input
+
+# what if there is no symbol
+if symbol == None or symbol.isdigit():
+    print("Whoops, there isn't a stock with that ticker, please try another one!")
+    exit()
 
 request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
 
 response = requests.get(request_url)
 
 parsed_response = json.loads(response.text)
+
+if 'Error Message' in parsed_response:
+    print("Whoops, there isn't a stock with that ticker, please try another one!")
+    exit()
 
 last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
 
@@ -66,20 +75,20 @@ with open(csv_file_path, "w") as csv_file: # "w" means "open the file for writin
 x = latest_close 
 y = recent_low + (recent_low * .2)
 
-def recommendation():
-    if (x < y):
+def recommendation(x, y):
+    if (float(x) < y):
         return "BUY!"
     else:
         return "DON'T BUY!"
 
-a = "BECAUSE THE STOCK'S LATEST CLOSING PRICE IS LESS THAN 20% OF IT'S RECENT LOW")
-b = "BECAUSE THE STOCK'S LATEST CLOSING PRICE IS MORE THAN/EQUAL TO 20% OF IT'S RECENT LOW")
+a = "BECAUSE THE STOCK'S LATEST CLOSING PRICE IS LESS THAN 20% OF IT'S RECENT LOW"
+b = "BECAUSE THE STOCK'S LATEST CLOSING PRICE IS MORE THAN OR EQUAL TO 20% OF IT'S RECENT LOW"
 
-def because():
-    if (x < y):
-        return "a"
+def because(x, y):
+    if (float(x) < y):
+        return a
     else:
-        return "b"
+        return b
 
 print("-------------------------")
 print("SELECTED SYMBOL: " + symbol)
@@ -92,8 +101,8 @@ print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
 print(f"RECENT HIGH: {to_usd(float(recent_high))}")
 print(f"RECENT LOW: {to_usd(float(recent_low))}")
 print("-------------------------")
-print("RECOMMENDATION: " + str(recommendation))
-print("BECAUSE: " + str(because))
+print("RECOMMENDATION: " + recommendation(x, y))
+print("BECAUSE: " + because(x, y))
 print("-------------------------")
 print(f"WRITING DATA TO CSV: {csv_file_path}...")
 print("HAPPY INVESTING!")
